@@ -17,74 +17,70 @@ enum macro_id {
     EZVER, TILDE_NO, CIRC_NO, ACUT_NO, GRV_NO
 };
 
-#define PSTD( first,second ) ACTION_TAP_DANCE_DOUBLE(KC_ ## first, second )
-
 //Tap Dance Declarations
 enum {
-  PS_TD_H = 0,
-  PS_TD_J,
-  PS_TD_K,
-  PS_TD_L,
+  TD_BRCS,
+  TD_CBRCS,
+  TD_COMP,
+  TD_PARE,
+  TD_QUOT
 };
-
+void dance_curly (qk_tap_dance_state_t *state, void *user_data);
+void dance_brace (qk_tap_dance_state_t *state, void *user_data);
 //Tap Dance Definitions
 qk_tap_dance_action_t tap_dance_actions[] = {
-//Tap once for Esc, twice for Caps Lock
-[PS_TD_H] = ACTION_TAP_DANCE_DOUBLE(KC_H,NO_UNDS), // h, double tap for _
-[PS_TD_J] = ACTION_TAP_DANCE_DOUBLE(KC_J,NO_LESS), // j, double tap for <
-[PS_TD_K] = ACTION_TAP_DANCE_DOUBLE(KC_K,KC_PSLS), // k double tap for /
-[PS_TD_L] = ACTION_TAP_DANCE_DOUBLE(KC_L,NO_GRTR), // l double tap for >
+//[TD_BRCS] = ACTION_TAP_DANCE_DOUBLE(NO_LBRC,NO_RBRC),   // [, double tap for ]
+//[TD_CBRCS] = ACTION_TAP_DANCE_DOUBLE(RALT(KC_7),RALT(KC_9)),  // {, double tap for }
+[TD_CBRCS]   = ACTION_TAP_DANCE_FN (dance_curly),
+[TD_BRCS]   = ACTION_TAP_DANCE_FN (dance_brace),
+[TD_COMP]   = ACTION_TAP_DANCE_DOUBLE(NO_LESS,NO_GRTR),   // <, double tap for >
+[TD_PARE]   = ACTION_TAP_DANCE_DOUBLE(NO_LPRN,NO_RPRN),   // (, double tap for )
+[TD_QUOT]   = ACTION_TAP_DANCE_DOUBLE(NO_QUO2,KC_BSLS)    // ", double tap for '
 };
 
-#ifdef TAP_DANCE_ENABLE
-#define PS_KEY( key ) TD( PS_TD_ ## key )
-#else
-#define PS_KEY( key ) KC_ ## key
-#endif
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 /* Keymap 0: Basic layer
  *
  * ,--------------------------------------------------.           ,--------------------------------------------------.
- * |   ESC  |   1  |   [  |   ]  |   4  |   5  |  :   |           |   ;  |   6  |   ?  |   {  |   }  |   =  |   Å    |
+ * |   ESC  |   @  |   !  |   #  |   :  |   |  |  ~   |           |   ;  |   ?  |  <,> |  {,} |  [,] |   ^  |   Å    |
  * |--------+------+------+------+------+-------------|           |------+------+------+------+------+------+--------|
- * |   TAB  |   Q  |   W  |   E  |   R  |   T  |  (   |           |   )  |   Y  |   U  |   I  |   O  |   P  |   \    |
+ * |   TAB  |   Q  |   W  |   E  |   R  |   T  | (,)  |           |   *  |   Y  |   U  |   I  |   O  |   P  |   \    |
  * |--------+------+------+------+------+------|      |           |      |------+------+------+------+------+--------|
  * |   DEL  |   A  |   S  |   D  |   F  |   G  |------|           |------|   H  |   J  |   K  |   L  |   Ö  |   Ä    |
- * |        |      |      |      |      |      |------|           |------|   _  |   <  |   /  |   >  |      |        |
- * |--------+------+------+------+------+------|  '   |           |   "  |------+------+------+------+------+--------|
+ * |--------+------+------+------+------+------|  ",' |           |   &  |------+------+------+------+------+--------|
  * |  SHIFT |   Z  |   X  |   C  |   V  |   B  |      |           |      |   N  |   M  |   ,  |   .  |   /  | SHIFT  |
  * `--------+------+------+------+------+-------------'           `-------------+------+------+------+------+--------'
- *   | ctrl | left |  dn  |  up  | tg1  |                                       |  tg2  | dn  |  up  | right| ctrl  |
+ *   | ctrl |   %  |   $  |  =   | tg1  |                                       |  tg2  |  +  |  -   |   _  | ctrl  |
  *   `----------------------------------'                                       `----------------------------------'
  *                                        ,-------------.       ,--------------.
  *                                        | App  | Win  |       | PgDn |  Esc  |
  *                                        | Alt  |      |       |      |  Ctrl |
  *                                 ,------|------|------|       |------+-------+------.
  *                                 |      |      | Ins  |       | PgDn |       |      |
- *                                 | Bspc |Space |------|       |------|  Tab  |Enter |
+ *                                 | Space| Bspc |------|       |------|  Tab  |Enter |
  *                                 |      |      | Home |       | End  |       |      |
  *                                 |      |      | Alt  |       | Alt  |       | Alt  |
  *                                 `--------------------'       `---------------------'
  */
   [0] = KEYMAP(
     // left hand
-    KC_ESCAPE,        KC_1,     NO_LBRC,      NO_RBRC,      KC_4,         KC_5,       NO_COLN,
-    KC_TAB,           KC_Q,     KC_W,         KC_E,         KC_R,         KC_T,       NO_LPRN,
-    KC_DELETE,  SFT_T(KC_A),    KC_S,         KC_D,         KC_F,         KC_G,
-    KC_LSHIFT,  CTL_T(KC_Z),    KC_X,         KC_C,         KC_V,         KC_B,       KC_BSLS,
-    KC_LCTL,          KC_LEFT,  KC_DOWN,      KC_UP,        TG(1),
+    KC_ESCAPE,        NO_AT,    KC_EXLM,      KC_HASH,      NO_COLN,      NO_PIPE,  M(TILDE_NO),
+    KC_TAB,           KC_Q,     KC_W,         KC_E,         KC_R,         KC_T,   TD( TD_PARE),
+    KC_DELETE,  SFT_T(KC_A),    SFT_T(KC_S),  KC_D,         KC_F,         KC_G,
+    KC_LSHIFT,  CTL_T(KC_Z),    KC_X,         KC_C,         KC_V,         KC_B,   TD( TD_QUOT),
+    KC_LCTL,          KC_PERC,  NO_DLR,      NO_EQL,        TG(1),
                                                                     ALT_T(KC_APPLICATION),    KC_LGUI,
                                                                                               KC_INS,
-                                                              KC_BSPACE,  KC_SPACE,    ALT_T(KC_HOME),
+                                                              KC_SPACE,  KC_BSPACE,    ALT_T(KC_HOME),
 
     // right hand
-    NO_SCLN,          KC_6,         NO_QUES,      NO_LCBR,      NO_RCBR,      NO_EQL,       NO_AM,
-    NO_RPRN,          KC_Y,         KC_U,         KC_I,         KC_O,         KC_P,         NO_BSLS,
-              PS_KEY( H ),  PS_KEY( J ),  PS_KEY( K ),  PS_KEY( L ),    SFT_T(NO_AE),       NO_OSLH,
-    NO_QUO2,          KC_N,         KC_M,         KC_COMMA,     KC_DOT, CTL_T(KC_PSLS),     KC_RSHIFT,
-                                    TG(2),        KC_DOWN,      KC_UP,        KC_RIGHT,     KC_LCTL,
+    NO_SCLN,          NO_QUES,  TD( TD_COMP), TD( TD_CBRCS),TD( TD_BRCS),   M(CIRC_NO),     NO_AM,
+    KC_KP_ASTERISK,   KC_Y,         KC_U,         KC_I,         KC_O,         KC_P,         NO_BSLS,
+                      KC_H,         KC_J,         KC_K,   SFT_T(KC_L),  SFT_T(NO_AE),       NO_OSLH,
+    NO_AMPR,          KC_N,         KC_M,         KC_COMMA,     KC_DOT, CTL_T(KC_PSLS),     KC_RSHIFT,
+                                    TG(2),        KC_KP_PLUS,   KC_KP_MINUS,  NO_UNDS,      KC_LCTL,
       KC_PGUP,  CTL_T(KC_ESCAPE),
       KC_PGDOWN,
 ALT_T(KC_END),        KC_TAB,   ALT_T(KC_ENTER)
@@ -95,7 +91,7 @@ ALT_T(KC_END),        KC_TAB,   ALT_T(KC_ENTER)
     _______,          KC_F1,    KC_F2,        KC_F3,        KC_F4,        KC_F5,          _______,
     _______,          KC_EXLM,  NO_AT,        NO_LCBR,      NO_RCBR,      NO_PIPE,        _______,
     _______,          KC_HASH,  NO_DLR,       NO_LPRN,      NO_RPRN,      KC_FN7,
-    M(EZVER),          KC_PERC,  M(CIRC_NO),   NO_LBRC,      NO_RBRC,      M(TILDE_NO),    _______,
+    M(EZVER),         KC_PERC,  M(CIRC_NO),   NO_LBRC,      NO_RBRC,    M(TILDE_NO),    _______,
     _______,          _______,  _______,      _______,      _______, 
                                                                           _______,          _______,
                                                                                             _______,
@@ -143,9 +139,6 @@ const uint16_t PROGMEM fn_actions[] = {
     [5] = ACTION_MACRO(GRV_NO), // Completed ` character, no space needed.
 };
 
-//const uint16_t PROGMEM fn_actions[] = {
-//  [1] = ACTION_LAYER_TAP_TOGGLE(1)
-//};
 
 // leaving this in place for compatibilty with old keymaps cloned and re-compiled.
 const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
@@ -167,6 +160,40 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
       }
     return MACRO_NONE;
 };
+
+void dance_curly (qk_tap_dance_state_t *state, void *user_data) {
+  switch(state->count) {
+    case 1:
+      register_code16(KC_RALT);
+      register_code16(KC_7);
+      unregister_code16(KC_7);
+      unregister_code16(KC_RALT);
+      break;
+    case 2:
+      register_code16(KC_RALT);
+      register_code16(KC_0);
+      unregister_code16(KC_0);
+      unregister_code16(KC_RALT);
+      break;
+  }
+}
+
+void dance_brace (qk_tap_dance_state_t *state, void *user_data) {
+  switch(state->count) {
+    case 1:
+      register_code16(KC_RALT);
+      register_code16(KC_8);
+      unregister_code16(KC_8);
+      unregister_code16(KC_RALT);
+      break;
+    case 2:
+      register_code16(KC_RALT);
+      register_code16(KC_9);
+      unregister_code16(KC_9);
+      unregister_code16(KC_RALT);
+      break;
+  }
+}
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
