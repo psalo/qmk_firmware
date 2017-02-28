@@ -129,17 +129,6 @@ ALT_T(KC_END),        KC_TAB,   ALT_T(KC_ENTER)
 
 };
 
-
-
-const uint16_t PROGMEM fn_actions[] = {
-    [1] = ACTION_MODS_ONESHOT(MOD_LSFT),  // Sticky shift light. Tap for the next keypress to be shifted. Hold for regular shift.
-    [2] = ACTION_MACRO(TILDE_NO), // Completed ~ character(pc and mac), no space needed.
-    [3] = ACTION_MACRO(CIRC_NO), // Completed ^ character, no space needed.
-    [4] = ACTION_MACRO(ACUT_NO), // Completed ´ character, no space needed.
-    [5] = ACTION_MACRO(GRV_NO), // Completed ` character, no space needed.
-};
-
-
 // leaving this in place for compatibilty with old keymaps cloned and re-compiled.
 const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
 {
